@@ -1,0 +1,61 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: rrhh-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TZ: America/La_Paz
+    volumes:
+      - rrhh_pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - rrhh_net
+   
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build: ./api
+    container_name: rrhh-api
+    restart: unless-stopped
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      API_PORT: 3000
+      TOLERANCIA_MINUTOS: ${TOLERANCIA_MINUTOS:-0}
+    depends_on:
+      database:
+        condition: service_healthy  
+    ports:
+      - "${API_PORT_HOST:-3000}:3000"  # expuesto solo para pruebas con curl/Postman
+    networks:
+      - rrhh_net
+  web:
+    build: ./web
+    container_name: rrhh-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    networks:
+      - rrhh_net
+
+networks:
+  rrhh_net:
+    name: rrhh_net
+    driver: bridge
+
+volumes:
+  rrhh_pgdata:
+    name: rrhh_pgdata

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RRHH · Marcaciones de personal</title>
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+</head>
+<body>
+  <header>
+    <h1>Marcaciones de personal</h1>
+    <span id="estadoApi" class="pill">Verificando API…</span>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2 id="tituloForm">Registrar marcación</h2>
+      <form id="form" novalidate>
+        <input type="hidden" id="id">
+        <div class="grid">
+          <label>Código de empleado *<input id="codigo_empleado" required maxlength="20" placeholder="EMP001"></label>
+          <label>Nombre completo *<input id="nombre_empleado" required maxlength="120" placeholder="Ana Pérez"></label>
+          <label>Fecha *<input id="fecha" type="date" required></label>
+          <label>Ingreso programado *<input id="hora_ingreso_programada" type="time" required value="08:00"></label>
+          <label>Ingreso real<input id="hora_ingreso_real" type="time"></label>
+          <label>Salida programada *<input id="hora_salida_programada" type="time" required value="16:00"></label>
+          <label>Salida real<input id="hora_salida_real" type="time"></label>
+          <label class="ancho">Observación<input id="observacion" maxlength="255"></label>
+        </div>
+        <p class="nota">El estado (puntual, atraso, incompleto…) lo calcula automáticamente el API.</p>
+        <div id="mensaje" class="mensaje" hidden></div>
+        <div class="acciones">
+          <button type="submit" id="btnGuardar">Guardar</button>
+          <button type="button" id="btnCancelar" class="secundario" hidden>Cancelar edición</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Marcaciones registradas</h2>
+      <form id="filtros" class="filtros">
+        <label>Empleado<input id="fEmpleado" placeholder="EMP001"></label>
+        <label>Fecha<input id="fFecha" type="date"></label>
+        <button type="submit">Filtrar</button>
+        <button type="button" id="btnLimpiar" class="secundario">Limpiar</button>
+      </form>
+      <div class="tabla">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Código</th><th>Empleado</th><th>Fecha</th>
+              <th>Ingreso prog.</th><th>Ingreso real</th><th>Salida prog.</th><th>Salida real</th>
+              <th>Estado</th><th>Observación</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
